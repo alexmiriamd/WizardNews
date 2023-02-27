@@ -1,6 +1,8 @@
 const express = require("express");
 const app = express();
 
+app.use(morgan('dev')); //after installing morgan, logs req and res info
+
 app.get("/", (req, res) => res.send("Hello World!"));
 
 const PORT = 1337;
