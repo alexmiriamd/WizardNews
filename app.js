@@ -68,7 +68,7 @@ app.get('/posts/:id', (req, res) => {       // single posts
   </body>
   </html>`
 
-  if(!post.id){
+  if(!post.id){           //error throw
     res.status(404)
     const html = `
     <!DOCTYPE html>
