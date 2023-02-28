@@ -1,96 +1,26 @@
 const express = require("express");
 const morgan = require("morgan");
 const app = express();
-const posts = require("./postBank")
+const posts = require("./postBank");
 const list = posts.list();
 
-app.use(morgan('dev')); //after installing morgan, logs req and res info
+const postList = require("./views/postList");
+const postDetails = require("./views/postDetails");
 
-app.use(express.static('public'));
+app.use(morgan("dev"));   //after installing morgan, logs req and res info
 
+app.use(express.static("public"));    //gives us access to our static files in public folder
 
-app.get("/", (req, res) => {      //all posts
+app.get("/", (req, res) => {    //get all posts
+  res.send(postList(list));
+});
 
-  const html = `
-  <!DOCTYPE html>
-  <html>
-  <head>
-    <link rel="stylesheet" href="/style.css" />
-  </head>
-  <div class="news-list">
-      <header><img src="/logo.png"/>Wizard News</header>
-      ${list.map(post => `
-        <div class='news-item'>
-          <p>
-            <span class="news-position">${post.id}. ▲</span>
-            <a href="/posts/${post.id}">${post.title}</a>
-            <small>(by ${post.name})</small>
-            
-          </p>
-          <small class="news-info">
-            ${post.upvotes} upvotes | ${post.date}
-          </small>
-        </div>`
-      ).join(' ')}
-    </div>
-  </body>
-  </html>
-  `
-  res.send(html);
-})
-
-
-app.get('/posts/:id', (req, res) => {       // single posts
+app.get("/posts/:id", (req, res) => {   //get single posts
   const id = req.params.id;
   const post = posts.find(id);
 
-  const html = 
-  `<!DOCTYPE html>
-  <html>
-  <head>
-    <link rel="stylesheet" href="/style.css" />
-  </head>
-
-  <div class="news-list">
-      <header><img src="/logo.png"/>Wizard News</header>
-      
-        <div class='news-item'>
-          <p>
-            <span class="news-position">${post.id}. ▲</span>
-            ${post.title}
-            <small>(by ${post.name})</small>
-          </p>
-          <p>
-          ${post.content}
-          </p>
-        </div>
-    </div>
-  </body>
-  </html>`
-
-  if(!post.id){           //error throw
-    res.status(404)
-    const html = `
-    <!DOCTYPE html>
-    <html>
-    <head>
-      <title>Wizard News</title>
-      <link rel="stylesheet" href="/style.css" />
-    </head>
-    <body>
-      <header><img src="/logo.png"/>Wizard News</header>
-      <div class="not-found">
-        <p>404: Page Not Found</p>
-      </div>
-    </body>
-    </html>
-    `
-    res.send(html)
-  } else{
-  res.send(
-    html
-  )}
-})
+  res.send(postDetails(post));
+});
 
 const PORT = 1337;
 
